@@ -1,3 +1,3 @@
-module github.com/sha1n/go-template
+module github.com/sha1n/clib
 
 go 1.16
