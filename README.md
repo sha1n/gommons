@@ -7,22 +7,3 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # clib
-
-## Before anything else
-```bash
-git clone git@github.com:<owner>/<repo>.git
-cd <repo>
-./init.sh <owner> <repo>
-```
-
-## Features
-
-- Init script for setup
-- Makefile
-- Workflows
-  - Go build + coverage - [go.yml](/.github/workflows/go.yml)
-  - Go report card - [go-report-card.yml](/.github/workflows/go-report-card.yml)
-  - Release Drafter - [release-drafter.yml](/.github/workflows/release-drafter.yml)
-  - Dependabot App - [dependabot.yml](/.github/dependabot.yml)
-- Jekyll site setup with the [Cayman](https://github.com/pages-themes/cayman) theme (and some color overrides)
-- .travis.yml for Go
