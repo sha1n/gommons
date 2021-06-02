@@ -18,9 +18,9 @@ type Release interface {
 }
 
 type rel struct {
-	owner      string
-	repo       string
-	delegate   *github.RepositoryRelease
+	owner    string
+	repo     string
+	delegate *github.RepositoryRelease
 }
 
 // GetLatestRelease returns the latest github non-draft release of this program.
@@ -31,9 +31,9 @@ func GetLatestRelease(owner, repo string) (Release, error) {
 	release, _, err := client.Repositories.GetLatestRelease(ctx, owner, repo)
 
 	return &rel{
-			owner:      owner,
-			repo:       repo,
-			delegate:   release,
+			owner:    owner,
+			repo:     repo,
+			delegate: release,
 		},
 		err
 }
