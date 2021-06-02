@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	mutex = sync.RWMutex{}
-	hooks = list.New()
+	mutex         = sync.RWMutex{}
+	hooks         = list.New()
 	signalChannel = make(chan os.Signal, 1)
 )
 
