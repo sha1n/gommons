@@ -17,12 +17,12 @@ type GetLatestReleaseFn = func(owner, repo string) (Release, error)
 type ResolveBinaryPathFn = func() (string, error)
 
 // CreateUpdateCommand creates the 'config' sub command
-func CreateUpdateCommand(owner, repo, version, binaryName string, ctx IOContext) *cobra.Command {
+func CreateUpdateCommand(owner, repo, version, binaryName string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Long:  `Checks for a newer release on GitHub and updates if one is found (https://com/sha1n/benchy/releases)`,
 		Short: `Checks for a newer release on GitHub and updates if one is found`,
-		Run:   runSelfUpdateFn(owner, repo, version, binaryName, ctx),
+		Run:   runSelfUpdateFn(owner, repo, version, binaryName),
 	}
 
 	return cmd
@@ -30,7 +30,7 @@ func CreateUpdateCommand(owner, repo, version, binaryName string, ctx IOContext)
 
 // runSelfUpdateFn runs the self update command based on the current version and binary name.
 // currentVersion is used to determine whether a newer one is available
-func runSelfUpdateFn(owner, repo, currentVersion, binaryName string, ctx IOContext) func(cmd *cobra.Command, args []string) {
+func runSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		if err := runSelfUpdateWith(owner, repo, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
 			log.Error(err)
