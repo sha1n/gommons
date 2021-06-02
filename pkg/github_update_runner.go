@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -20,7 +21,7 @@ type ResolveBinaryPathFn = func() (string, error)
 func CreateUpdateCommand(owner, repo, version, binaryName string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
-		Long:  `Checks for a newer release on GitHub and updates if one is found (https://com/sha1n/benchy/releases)`,
+		Long:  fmt.Sprintf(`Checks for a newer release on GitHub and updates if one is found (https://github.com/%s/%s/releases)`, owner, repo),
 		Short: `Checks for a newer release on GitHub and updates if one is found`,
 		Run:   runSelfUpdateFn(owner, repo, version, binaryName),
 	}
