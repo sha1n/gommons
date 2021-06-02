@@ -33,14 +33,17 @@ func CreateUpdateCommand(owner, repo, version, binaryName string) *cobra.Command
 // currentVersion is used to determine whether a newer one is available
 func runSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		if err := runSelfUpdateWith(owner, repo, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
+		if err := RunSelfUpdate(owner, repo, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
 			log.Error(err)
 			log.Exit(1)
 		}
 	}
 }
 
-func runSelfUpdateWith(owner, repo, version, binaryName string, resolveBinaryPathFn ResolveBinaryPathFn, getLatestReleaseFn GetLatestReleaseFn) (err error) {
+// RunSelfUpdate checks whether the github.com/owner/repo has a release that is more recent that the specified version. If one exists, tries to
+// find a binary asset that matches the current platform and the provided binaryName. If one is found, it is downloaded to the path of the current
+// executable.
+func RunSelfUpdate(owner, repo, version, binaryName string, resolveBinaryPathFn ResolveBinaryPathFn, getLatestReleaseFn GetLatestReleaseFn) (err error) {
 	var binaryPath string
 	if binaryPath, err = resolveBinaryPathFn(); err != nil {
 		return err

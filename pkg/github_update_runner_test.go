@@ -23,7 +23,7 @@ func TestRunSelfUpdateWithReleaseError(t *testing.T) {
 		getLatestRelease := aGetLatestReleaseFnWith(nil, expectedError)
 		owner, repo := test.RandomString(), test.RandomString()
 
-		actualError := runSelfUpdateWith(owner, repo, test.RandomString(), test.RandomString(), resolveBinaryPathFn, getLatestRelease)
+		actualError := RunSelfUpdate(owner, repo, test.RandomString(), test.RandomString(), resolveBinaryPathFn, getLatestRelease)
 
 		assert.Equal(t, expectedError, actualError)
 	})
@@ -36,7 +36,7 @@ func TestRunSelfUpdateWithCurrentRelease(t *testing.T) {
 		getLatestRelease := aGetLatestReleaseFnWith(latestRelease, nil)
 		owner, repo := test.RandomString(), test.RandomString()
 
-		actualError := runSelfUpdateWith(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
+		actualError := RunSelfUpdate(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
 
 		assert.NoError(t, actualError)
 		assert.False(t, latestRelease.downloadCalled)
@@ -51,7 +51,7 @@ func TestRunSelfUpdateWithDownloadError(t *testing.T) {
 		getLatestRelease := aGetLatestReleaseFnWith(latestRelease, nil)
 		owner, repo := test.RandomString(), test.RandomString()
 
-		actualError := runSelfUpdateWith(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
+		actualError := RunSelfUpdate(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
 
 		assert.Error(t, actualError)
 		assert.Equal(t, expectedError, actualError)
@@ -67,7 +67,7 @@ func TestRunSelfUpdateWithSuccessfulDownload(t *testing.T) {
 		getLatestRelease := aGetLatestReleaseFnWith(latestRelease, nil)
 		owner, repo := test.RandomString(), test.RandomString()
 
-		actualError := runSelfUpdateWith(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
+		actualError := RunSelfUpdate(owner, repo, currentVersion, test.RandomString(), resolveBinaryPathFn, getLatestRelease)
 
 		assert.NoError(t, actualError)
 		assert.True(t, latestRelease.downloadCalled)
