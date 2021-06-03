@@ -40,7 +40,7 @@ func NewSignalHook(filter os.Signal, f func()) HookFn {
 }
 
 func startListening() {
-	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 
 	go func() {
 		sig := <-signalChannel
