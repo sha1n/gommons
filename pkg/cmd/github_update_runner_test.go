@@ -1,4 +1,4 @@
-package pkg
+package cmd
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sha1n/clib/test"
+	"github.com/sha1n/clib/pkg/test"
 	"github.com/stretchr/testify/assert"
 )
 
