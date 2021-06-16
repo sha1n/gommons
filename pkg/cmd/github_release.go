@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,18 +25,31 @@ type rel struct {
 }
 
 // GetLatestRelease returns the latest github non-draft release of this program.
-func GetLatestRelease(owner, repo string) (Release, error) {
+func GetLatestRelease(owner, repo, tag string) (release Release, err error) {
 	ctx := context.Background()
 	client := github.NewClient(nil)
 
-	release, _, err := client.Repositories.GetLatestRelease(ctx, owner, repo)
+	var response *github.Response
+	var ghRelease *github.RepositoryRelease
+	if tag == "" {
+		ghRelease, response, err = client.Repositories.GetLatestRelease(ctx, owner, repo)
+	} else {
+		ghRelease, response, err = client.Repositories.GetReleaseByTag(ctx, owner, repo, tag)
+	}
 
-	return &rel{
+	switch response.StatusCode {
+	case 404:
+		err = errors.New("no matching release could be found")
+
+	case 200:
+		release = &rel{
 			owner:    owner,
 			repo:     repo,
-			delegate: release,
-		},
-		err
+			delegate: ghRelease,
+		}
+	}
+
+	return
 }
 
 func (r *rel) TagName() string {
@@ -74,5 +88,6 @@ func getRequiredAssetName(binaryName string) string {
 	}
 
 	log.Debugf("Required asset name is: %s", assertName)
+
 	return assertName
 }
