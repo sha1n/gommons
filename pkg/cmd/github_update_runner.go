@@ -11,8 +11,8 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-// GetLatestReleaseFn ...
-type GetLatestReleaseFn = func(owner, repo string) (Release, error)
+// GetReleaseFn ...
+type GetReleaseFn = func(owner, repo, tag string) (Release, error)
 
 // ResolveBinaryPathFn ...
 type ResolveBinaryPathFn = func() (string, error)
@@ -23,17 +23,20 @@ func CreateUpdateCommand(owner, repo, version, binaryName string) *cobra.Command
 		Use:   "update",
 		Long:  fmt.Sprintf(`Checks for a newer release on GitHub and updates if one is found (https://github.com/%s/%s/releases)`, owner, repo),
 		Short: `Checks for a newer release on GitHub and updates if one is found`,
-		Run:   runSelfUpdateFn(owner, repo, version, binaryName),
+		Run:   RunSelfUpdateFn(owner, repo, version, binaryName),
 	}
+
+	cmd.Flags().String("tag", "", `the version tag to update to`)
 
 	return cmd
 }
 
-// runSelfUpdateFn runs the self update command based on the current version and binary name.
+// RunSelfUpdateFn runs the self update command based on the current version and binary name.
 // currentVersion is used to determine whether a newer one is available
-func runSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *cobra.Command, args []string) {
+func RunSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		if err := RunSelfUpdate(owner, repo, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
+		tag, _ := cmd.Flags().GetString("tag")
+		if err := RunSelfUpdate(owner, repo, tag, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
 			log.Error(err)
 			log.Exit(1)
 		}
@@ -43,37 +46,49 @@ func runSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *c
 // RunSelfUpdate checks whether the github.com/owner/repo has a release that is more recent that the specified version. If one exists, tries to
 // find a binary asset that matches the current platform and the provided binaryName. If one is found, it is downloaded to the path of the current
 // executable.
-func RunSelfUpdate(owner, repo, version, binaryName string, resolveBinaryPathFn ResolveBinaryPathFn, getLatestReleaseFn GetLatestReleaseFn) (err error) {
+func RunSelfUpdate(owner, repo, requestedTag, version, binaryName string, resolveBinaryPathFn ResolveBinaryPathFn, getReleaseFn GetReleaseFn) (err error) {
 	var binaryPath string
 	if binaryPath, err = resolveBinaryPathFn(); err != nil {
 		return err
 	}
 
-	log.Infof("Fetching latest release...")
+	if requestedTag == version {
+		log.Infof("You already run %s version %s", binaryName, requestedTag)
+		return
+	}
+
+	log.Infof("Fetching release...")
 	var release Release
-	if release, err = getLatestReleaseFn(owner, repo); err != nil {
+	if release, err = getReleaseFn(owner, repo, requestedTag); err != nil {
 		return err
 	}
 
-	tagName := release.TagName()
-	log.Infof("Latest release tag is %s", tagName)
-	log.Infof("Current version is %s", version)
+	foundTag := release.TagName()
+	if requestedTag == "" {
+		log.Infof("Latest tag is %s", foundTag)
+		log.Infof("Current version is %s", version)
 
-	if tagName != "" && tagName != version && semver.Compare(tagName, version) > 0 {
-		log.Infof("Downloading version %s...", tagName)
-		var rc io.ReadCloser
-		if rc, err = release.DownloadBinary(binaryName); err != nil {
-			return err
+		if foundTag != "" && foundTag != version && semver.Compare(foundTag, version) > 0 {
+			err = download(foundTag, binaryName, binaryPath, release)
+		} else {
+			log.Infof("You are already running the latest version of %s!", binaryName)
 		}
-
-		var content []byte
-		if content, err = ioutil.ReadAll(rc); err == nil {
-			return ioutil.WriteFile(binaryPath, content, 0755)
-		}
-
 	} else {
-		log.Infof("You are already running the latest version of %s!", binaryName)
+		err = download(requestedTag, binaryName, binaryPath, release)
 	}
 
 	return err
+}
+
+func download(tagName, assetName, targetPath string, release Release) (err error) {
+	log.Infof("Downloading version %s...", tagName)
+	var rc io.ReadCloser
+	if rc, err = release.DownloadBinary(assetName); err == nil {
+		var content []byte
+		if content, err = ioutil.ReadAll(rc); err == nil {
+			err = ioutil.WriteFile(targetPath, content, 0755)
+			defer rc.Close()
+		}
+	}
+	return
 }
