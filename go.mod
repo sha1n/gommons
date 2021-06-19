@@ -1,4 +1,4 @@
-module github.com/sha1n/clib
+module github.com/sha1n/gommons
 
 go 1.16
 
