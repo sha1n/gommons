@@ -1,9 +1,0 @@
-language: go
-go:
-  - "1.16.x"
-os:
-  - osx
-  - linux
-  - windows
-sudo: false
-script: make
