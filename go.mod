@@ -1,6 +1,6 @@
 module github.com/sha1n/gommons
 
-go 1.18
+go 1.21
 
 require (
 	github.com/google/go-github/v35 v35.3.0
