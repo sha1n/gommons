@@ -8,14 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func init() {
-	rand.Seed(int64(time.Now().Nanosecond()))
-}
+var random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // RandomStrings returns a slice of random strings
 func RandomStrings() []string {
 	values := []string{}
-	for i := 0; i < rand.Intn(10); i++ {
+	for i := 0; i < random.Intn(10); i++ {
 		values = append(values, RandomString())
 	}
 
@@ -30,10 +28,10 @@ func RandomString() string {
 
 // RandomBool ...
 func RandomBool() bool {
-	return rand.Intn(2)%2 == 0
+	return random.Intn(2)%2 == 0
 }
 
 // RandomUint ...
 func RandomUint() uint {
-	return uint(rand.Uint32())
+	return uint(random.Uint32())
 }

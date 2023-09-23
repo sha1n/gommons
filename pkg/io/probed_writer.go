@@ -3,6 +3,7 @@ package io
 import (
 	"bytes"
 	"io"
+	"math"
 	"sync"
 )
 
@@ -11,15 +12,24 @@ type ProbedWriter struct {
 	w       io.Writer
 	buf     *bytes.Buffer
 	maxSize int
-	mu      sync.Mutex
+	mu      sync.RWMutex
 }
 
-// NewProbedWriter creates a new ProbedWriter.
+// NewProbedWriter creates a new ProbedWriter with a probe buffer for the last n bytes.
 func NewProbedWriter(w io.Writer, n int) *ProbedWriter {
 	return &ProbedWriter{
 		w:       w,
 		buf:     bytes.NewBuffer(make([]byte, 0, n)),
 		maxSize: n,
+	}
+}
+
+// NewUnlimitedProbedWriter creates a new ProbedWriter with a probe buffer of unlimited size.
+func NewUnlimitedProbedWriter(w io.Writer) *ProbedWriter {
+	return &ProbedWriter{
+		w:       w,
+		buf:     new(bytes.Buffer),
+		maxSize: math.MaxInt,
 	}
 }
 
@@ -45,15 +55,23 @@ func (l *ProbedWriter) Write(p []byte) (n int, err error) {
 	return n, nil
 }
 
-// LastN returns the last N bytes written.
+func (l *ProbedWriter) Len() int {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return l.buf.Len()
+}
+
+// Bytes returns the last N bytes written.
 func (l *ProbedWriter) Bytes() []byte {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	return l.buf.Bytes()
 }
 
 // String returns the last N bytes written as a string.
 func (l *ProbedWriter) String() string {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	return string(l.Bytes())
 }
 
