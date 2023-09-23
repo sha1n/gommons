@@ -70,8 +70,6 @@ func (l *ProbedWriter) Bytes() []byte {
 
 // String returns the last N bytes written as a string.
 func (l *ProbedWriter) String() string {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
 	return string(l.Bytes())
 }
 
