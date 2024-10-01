@@ -1,6 +1,7 @@
 module github.com/sha1n/gommons
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/google/go-github/v35 v35.3.0
@@ -9,7 +10,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/mod v0.20.0
+	golang.org/x/mod v0.21.0
 )
 
 require (
