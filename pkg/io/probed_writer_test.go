@@ -68,11 +68,11 @@ func TestWriteProbeBufferUnlimitedContent(t *testing.T) {
 	wp := NewUnlimitedProbedWriter(new(bytes.Buffer))
 
 	testCases := []struct {
-		input          string
+		input string
 	}{
 		{""},
 		{generateRandomString(1, 1024)},
-		{generateRandomString(1024, 1024 * 1024 * 10)},
+		{generateRandomString(1024, 1024*1024*10)},
 	}
 
 	for _, tc := range testCases {
