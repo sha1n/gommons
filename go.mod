@@ -1,7 +1,8 @@
 module github.com/sha1n/gommons
 
-go 1.22
-toolchain go1.22.5
+go 1.22.0
+
+toolchain go1.23.1
 
 require (
 	github.com/google/go-github/v35 v35.3.0
