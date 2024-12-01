@@ -11,7 +11,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/mod v0.21.0
+	golang.org/x/mod v0.22.0
 )
 
 require (
