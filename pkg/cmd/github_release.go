@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"runtime"
 
 	"github.com/google/go-github/v35/github"
-	log "github.com/sirupsen/logrus"
 )
 
 // Release a GitHub realease facade
@@ -70,11 +70,11 @@ func (r *rel) DownloadBinary(binaryName string) (rc io.ReadCloser, err error) {
 
 func findCompatibleAssetID(binaryName string, release *github.RepositoryRelease) (int64, error) {
 	requiredAssetName := getRequiredAssetName(binaryName)
-	log.Debugf("Required asset name is %s. Looking for matching assets in latest release.", requiredAssetName)
+	slog.Debug(fmt.Sprintf("Required asset name is %s. Looking for matching assets in latest release.", requiredAssetName))
 	for _, asset := range (*release).Assets {
 		if *asset.Name == requiredAssetName {
-			log.Debugf("Found asset ID = %d", *asset.ID)
-			log.Debugf("Found asset Name = %s", *asset.Name)
+			slog.Debug(fmt.Sprintf("Found asset ID = %d", *asset.ID))
+			slog.Debug(fmt.Sprintf("Found asset Name = %s", *asset.Name))
 			return *asset.ID, nil
 		}
 	}
@@ -87,7 +87,7 @@ func getRequiredAssetName(binaryName string) string {
 		assertName += ".exe"
 	}
 
-	log.Debugf("Required asset name is: %s", assertName)
+	slog.Debug(fmt.Sprintf("Required asset name is: %s", assertName))
 
 	return assertName
 }

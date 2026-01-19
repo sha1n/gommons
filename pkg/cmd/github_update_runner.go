@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log/slog"
 	"os"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )
@@ -37,8 +37,8 @@ func RunSelfUpdateFn(owner, repo, currentVersion, binaryName string) func(cmd *c
 	return func(cmd *cobra.Command, args []string) {
 		tag, _ := cmd.Flags().GetString("tag")
 		if err := RunSelfUpdate(owner, repo, tag, currentVersion, binaryName, os.Executable, GetLatestRelease); err != nil {
-			log.Error(err)
-			log.Exit(1)
+			slog.Error(err.Error())
+			os.Exit(1)
 		}
 	}
 }
@@ -53,11 +53,11 @@ func RunSelfUpdate(owner, repo, requestedTag, version, binaryName string, resolv
 	}
 
 	if requestedTag == version {
-		log.Infof("You already run %s version %s", binaryName, requestedTag)
+		slog.Info(fmt.Sprintf("You already run %s version %s", binaryName, requestedTag))
 		return
 	}
 
-	log.Infof("Fetching release...")
+	slog.Info("Fetching release...")
 	var release Release
 	if release, err = getReleaseFn(owner, repo, requestedTag); err != nil {
 		return err
@@ -65,13 +65,13 @@ func RunSelfUpdate(owner, repo, requestedTag, version, binaryName string, resolv
 
 	foundTag := release.TagName()
 	if requestedTag == "" {
-		log.Infof("Latest tag is %s", foundTag)
-		log.Infof("Current version is %s", version)
+		slog.Info(fmt.Sprintf("Latest tag is %s", foundTag))
+		slog.Info(fmt.Sprintf("Current version is %s", version))
 
 		if foundTag != "" && foundTag != version && semver.Compare(foundTag, version) > 0 {
 			err = download(foundTag, binaryName, binaryPath, release)
 		} else {
-			log.Infof("You are already running the latest version of %s!", binaryName)
+			slog.Info(fmt.Sprintf("You are already running the latest version of %s!", binaryName))
 		}
 	} else {
 		err = download(requestedTag, binaryName, binaryPath, release)
@@ -81,7 +81,7 @@ func RunSelfUpdate(owner, repo, requestedTag, version, binaryName string, resolv
 }
 
 func download(tagName, assetName, targetPath string, release Release) (err error) {
-	log.Infof("Downloading version %s...", tagName)
+	slog.Info(fmt.Sprintf("Downloading version %s...", tagName))
 	var rc io.ReadCloser
 	if rc, err = release.DownloadBinary(assetName); err == nil {
 		var content []byte
