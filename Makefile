@@ -37,7 +37,7 @@ install: go-get
 
 format: go-format
 
-lint: go-lint
+lint: go-lint golangci-lint
 
 compile:
 	@[ -d $(GOBUILD) ] || mkdir -p $(GOBUILD)
@@ -56,6 +56,11 @@ clean:
 	@-$(MAKE) go-clean
 
 go-lint:
+
+golangci-lint:
+	@echo "  >  Running golangci-lint..."
+	go tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint run
+
 	@echo "  >  Linting source files..."
 	go vet -mod=readonly -c=10 `go list -mod=readonly ./...`
 

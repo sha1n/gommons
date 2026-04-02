@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log/slog"
 	"os"
 
@@ -85,9 +84,9 @@ func download(tagName, assetName, targetPath string, release Release) (err error
 	var rc io.ReadCloser
 	if rc, err = release.DownloadBinary(assetName); err == nil {
 		var content []byte
-		if content, err = ioutil.ReadAll(rc); err == nil {
-			err = ioutil.WriteFile(targetPath, content, 0755)
-			defer rc.Close()
+		if content, err = io.ReadAll(rc); err == nil {
+			err = os.WriteFile(targetPath, content, 0755)
+			defer func() { _ = rc.Close() }()
 		}
 	}
 	return
