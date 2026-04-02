@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -165,18 +164,18 @@ func (r *fakeRelease) DownloadBinary(binaryName string) (rc io.ReadCloser, err e
 	rc, err = nil, r.downloadError
 
 	if r.downloadError == nil {
-		rc = ioutil.NopCloser(bytes.NewReader(r.data))
+		rc = io.NopCloser(bytes.NewReader(r.data))
 	}
 
 	return rc, err
 }
 
 func resolveExecutableFn() (ResolveBinaryPathFn, func()) {
-	f, _ := ioutil.TempFile("", "fake_binary")
+	f, _ := os.CreateTemp("", "fake_binary")
 
 	fn := func() (string, error) {
 		return f.Name(), nil
 	}
 
-	return fn, func() { os.Remove(f.Name()) }
+	return fn, func() { _ = os.Remove(f.Name()) }
 }

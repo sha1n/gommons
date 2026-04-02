@@ -10,7 +10,9 @@ import (
 func TestRandomStrings(t *testing.T) {
 	assert.Eventually(
 		t,
-		func() bool { return len(RandomStrings()) != len(RandomStrings()) },
+		func() bool {
+			return len(RandomStrings()) != len(RandomStrings()) //nolint:staticcheck
+		},
 		time.Second,
 		time.Millisecond,
 	)
@@ -19,7 +21,9 @@ func TestRandomStrings(t *testing.T) {
 func TestRandomString(t *testing.T) {
 	assert.Eventually(
 		t,
-		func() bool { return RandomString() != RandomString() },
+		func() bool {
+			return RandomString() != RandomString() //nolint:staticcheck
+		},
 		time.Second,
 		time.Millisecond,
 	)
@@ -28,7 +32,9 @@ func TestRandomString(t *testing.T) {
 func TestRandomBool(t *testing.T) {
 	assert.Eventually(
 		t,
-		func() bool { return RandomBool() != RandomBool() },
+		func() bool {
+			return RandomBool() != RandomBool() //nolint:staticcheck
+		},
 		time.Second,
 		time.Nanosecond,
 	)
@@ -37,7 +43,9 @@ func TestRandomBool(t *testing.T) {
 func TestRandomUint(t *testing.T) {
 	assert.Eventually(
 		t,
-		func() bool { return RandomUint() != RandomUint() },
+		func() bool {
+			return RandomUint() != RandomUint() //nolint:staticcheck
+		},
 		time.Second,
 		time.Millisecond,
 	)

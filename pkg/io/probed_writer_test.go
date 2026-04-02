@@ -28,7 +28,7 @@ func TestEmpty(t *testing.T) {
 
 func TestReset(t *testing.T) {
 	wp := NewUnlimitedProbedWriter(new(bytes.Buffer))
-	wp.Write([]byte(test.RandomString()))
+	_, _ = wp.Write([]byte(test.RandomString()))
 
 	wp.Reset()
 
@@ -91,7 +91,7 @@ func TestWriteOutputWriter(t *testing.T) {
 	outputWriter := new(bytes.Buffer)
 	wp := NewProbedWriter(outputWriter, 1)
 
-	wp.Write([]byte("Hello, world!"))
+	_, _ = wp.Write([]byte("Hello, world!"))
 
 	assert.Equal(t, "Hello, world!", outputWriter.String())
 }
